@@ -117,6 +117,8 @@ def build_record(df, record_id):
         datasources=datasources
     )
 
+    return output
+
 
 def build_records(df):
     
