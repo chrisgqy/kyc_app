@@ -2,6 +2,7 @@ from pathlib import Path
 import pandas as pd
 import numpy as np
 import core.models as models
+import pickle
 
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -28,7 +29,6 @@ def data_cleaning(df):
     return df
 
 
-
 def data_validation(df):
     if df.empty:
         raise ValueError("Input data is empty.")
@@ -44,19 +44,28 @@ def data_validation(df):
 
     invalid_states = match_states - valid_match_states
     print(f"Invalid match states found: {invalid_states}")
+    
     if_replacement = input(
         "Do you want to replace invalid match states? (y/n)")
     
     state_options = {i: state.value for i, state in enumerate(models.MatchFieldState)}
     if if_replacement.lower() == 'y':
-        replacement_value = input(
-            "Enter replacement value index: {0: 'match', 1: 'mismatch', 2: 'missing', 3: 'unknown'}: "
-            )
         
-        if replacement_value.isdigit() and int(replacement_value) in state_options:
-            replacement_state = state_options[int(replacement_value)]
-            df.replace(to_replace=list(invalid_states), value=replacement_state, inplace=True)
-            print(f"Replaced invalid states with: {replacement_state}")
+            for st in invalid_states:
+                
+                print(f"Invalid state: {st}")
+                replacement_value = input(
+                    "Enter replacement value index: {0: 'match', 1: 'mismatch', 2: 'missing', 3: 'unknown'}: "
+                    )
+                
+                if replacement_value.isdigit() and int(replacement_value) in state_options:
+                    
+                    replacement_state = state_options[int(replacement_value)]
+                    df.replace(to_replace=st, value=replacement_state, inplace=True)
+                    print(f"Replaced invalid states {st} with: {replacement_state}")
+                
+                else:
+                    ValueError("Invalid input. Please enter a valid index.")
     else:
         raise ValueError(f"Cannot proceed with the input data. Please check the invalid states: {invalid_states}")
     
@@ -95,6 +104,7 @@ def build_datasource_result(df, datasource_id):
 
     return output 
 
+
 def build_record(df, record_id):
     datasources = {}
     record = df[df["recordid"] == record_id]
@@ -111,9 +121,7 @@ def build_record(df, record_id):
 def build_records(df):
     
     df = data_cleaning(df)
-
     data_validation(df)
-
     field_validation(df)
     
     record = []
@@ -123,15 +131,18 @@ def build_records(df):
             record.append(build_record(df, rid))
         except Exception as e:
             print(f"Error processing record {rid}: {e}")
-    
+
     return record
 
 
 print("Building records from input data...")
 records = build_records(df)
+
 if records:
     print(f"Successfully built {len(records)} records.")
     
 
+with open(BASE_DIR.parent / "data" / "records.pkl", "wb") as f:
+    pickle.dump(records, f)
 
 
