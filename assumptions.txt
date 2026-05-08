@@ -1,0 +1,1 @@
+"recordid", "datasource", "trumatch_confidence"] are the three fields not related to matching. The rest should comply.
