@@ -43,9 +43,22 @@ def data_validation(df):
     match_states = set(df[full_match_field].values.flatten())
 
     invalid_states = match_states - valid_match_states
-    print(invalid_states)
-    # if invalid_states:
-    #     raise ValueError(f"Invalid match states found: {invalid_states}")
+    print(f"Invalid match states found: {invalid_states}")
+    if_replacement = input(
+        "Do you want to replace invalid match states? (y/n)")
+    
+    state_options = {i: state.value for i, state in enumerate(models.MatchFieldState)}
+    if if_replacement.lower() == 'y':
+        replacement_value = input(
+            "Enter replacement value index: {0: 'match', 1: 'mismatch', 2: 'missing', 3: 'unknown'}: "
+            )
+        
+        if replacement_value.isdigit() and int(replacement_value) in state_options:
+            replacement_state = state_options[int(replacement_value)]
+            df.replace(to_replace=list(invalid_states), value=replacement_state, inplace=True)
+            print(f"Replaced invalid states with: {replacement_state}")
+    else:
+        raise ValueError(f"Cannot proceed with the input data. Please check the invalid states: {invalid_states}")
     
 
 
@@ -103,16 +116,15 @@ def build_records(df):
 
     field_validation(df)
     
-    # record = []
+    record = []
 
-    # for rid in df["recordid"].unique():
-    #     try: 
-    #         record.append(build_record(df, rid))
-    #     except Exception as e:
-    #         print(f"Error processing record {rid}: {e}")
+    for rid in df["recordid"].unique():
+        try: 
+            record.append(build_record(df, rid))
+        except Exception as e:
+            print(f"Error processing record {rid}: {e}")
     
-    # return record
-    
+    return record
 
 
 print("Building records from input data...")
