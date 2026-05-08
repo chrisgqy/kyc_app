@@ -13,32 +13,55 @@ except FileNotFoundError:
     print("Error: kyc_data.csv not found.")
     exit(1)
 
-# full_match_field = [ 'firstinitial', 'firstname', 'middlename',
-#        'lastname', 'dayofbirth', 'monthofbirth', 'yearofbirth', 'streetname',
-#        'streetnumber', 'streettype', 'city', 'region', 'postalcode',
-#        'unitnumber', 'address1', 'taxid', 'socialinsurancenumber', 'voterid',
-#        'gender']
+full_match_field = [ 'firstinitial', 'firstname', 'middlename',
+       'lastname', 'dayofbirth', 'monthofbirth', 'yearofbirth', 'streetname',
+       'streetnumber', 'streettype', 'city', 'region', 'postalcode',
+       'unitnumber', 'address1', 'taxid', 'socialinsurancenumber', 'voterid',
+       'gender']
 
 required_columns = set(["recordid", "datasource", "trumatch_confidence"])
 
-def data_normalization(df):
+def data_cleaning(df):
     
     df.drop_duplicates(inplace=True)
-    df.replace('matcha', 'match', inplace=True)
     df.fillna('unknown', inplace=True)
-
     return df
 
 
+
 def data_validation(df):
+    if df.empty:
+        raise ValueError("Input data is empty.")
+    
+    if df["recordid"].isnull().any():
+        raise ValueError("Null values found in 'recordid' column.")
+    
+    if df["datasource"].isnull().any():
+        raise ValueError("Null values found in 'datasource' column.")
+    
+    valid_match_states = set(state.value for state in models.MatchFieldState)
+    match_states = set(df[full_match_field].values.flatten())
+
+    invalid_states = match_states - valid_match_states
+    print(invalid_states)
+    # if invalid_states:
+    #     raise ValueError(f"Invalid match states found: {invalid_states}")
+    
+
+
+def field_validation(df):
 
     missing_columns = required_columns - set(df.columns)
+    current_match_fields = set(df.columns) - required_columns
+
     if missing_columns:
         raise ValueError(f"Missing required columns: {missing_columns}")
-    if df.empty:
-        raise ValueError("Input dataframe is empty.")
+    
+    if not current_match_fields.issubset(set(full_match_field)):
+        raise ValueError(f"Invalid match fields: {current_match_fields - full_match_field}")
 
-#
+
+
 def build_datasource_result(df, datasource_id):
     
     match_fields = [col for col in df.columns if col not in required_columns]
@@ -74,25 +97,28 @@ def build_record(df, record_id):
 
 def build_records(df):
     
+    df = data_cleaning(df)
+
     data_validation(df)
-    
-    df = data_normalization(df)
 
-    record = []
-
-    for rid in df["recordid"].unique():
-        try: 
-            record.append(build_record(df, rid))
-        except Exception as e:
-            print(f"Error processing record {rid}: {e}")
+    field_validation(df)
     
-    return record
+    # record = []
+
+    # for rid in df["recordid"].unique():
+    #     try: 
+    #         record.append(build_record(df, rid))
+    #     except Exception as e:
+    #         print(f"Error processing record {rid}: {e}")
+    
+    # return record
     
 
 
 print("Building records from input data...")
 records = build_records(df)
-print(f"Successfully built {len(records)} records.")
+if records:
+    print(f"Successfully built {len(records)} records.")
     
 
 
