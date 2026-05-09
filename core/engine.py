@@ -68,9 +68,9 @@ def get_rows_with_invalid_states(df, invalid_states):
    
     match_fields = [col for col in full_match_field if col in df.columns]
     mask = df[match_fields].isin(invalid_states).any(axis=1)
-    
-    return df[mask]
+    df.sort_values(by='recordid', ascending = True, inplace = True)
 
+    return df[mask]
 
 
 def replace_invalid_states(df, replacements: dict):
