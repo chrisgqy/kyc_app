@@ -5,7 +5,7 @@ import pandas as pd
 import streamlit as st
 
 import core.engine as Engine
-from core.models import MatchFieldState
+import core.models as Models
 
 
 st.set_page_config(
@@ -30,3 +30,61 @@ uploaded_file = st.file_uploader(
 if uploaded_file is None:
     st.info("Please upload a CSV file to begin.")
     st.stop()
+
+
+try:
+    raw_df = pd.read_csv(uploaded_file)
+except Exception as exc:
+    st.error(f"Failed to read CSV file: {exc}")
+    st.stop()
+
+
+st.subheader("Raw Data Preview")
+st.dataframe(raw_df.head(5), use_container_width=True)
+
+
+try:
+    cleaned_df = Engine.data_cleaning(raw_df)
+    Engine.field_validation(cleaned_df)
+except Exception as exc:
+    st.error(f"Initial validation failed: {exc}")
+    st.stop()
+
+
+st.subheader("Cleaned Data Preview")
+st.dataframe(cleaned_df.head(5), use_container_width=True)
+
+
+invalid_states = Engine.find_invalid_match_states(cleaned_df)
+
+if invalid_states:
+    st.warning(f"Found {len(invalid_states)} invalid match state value(s).")
+    
+    invalid_rows = Engine.get_rows_with_invalid_states(cleaned_df, invalid_states)
+
+    st.subheader("Rows With Invalid Match States")
+    st.dataframe(invalid_rows, use_container_width=True)
+
+    if len(invalid_states) > 5:
+        st.error(
+            "More than 5 unique invalid match states were found. "
+            "Processing has stopped. Please clean the file before continuing."
+        )
+        st.stop()
+
+
+    valid_options = [state.value for state in Models.MatchFieldState]
+    replacements = {}
+    
+    for invalid_value in sorted(invalid_states):
+        replacement = st.selectbox(
+            f"Map invalid value `{invalid_value}` to:",
+            options=valid_options,
+            key=f"replace_{invalid_value}",
+        )
+        replacements[invalid_value] = replacement
+
+    if st.button("Apply Mapping and Continue"):
+        cleaned_df = Engine.replace_invalid_states(cleaned_df, replacements)
+        st.session_state["cleaned_df"] = cleaned_df
+        st.success("Invalid values replaced successfully.")
