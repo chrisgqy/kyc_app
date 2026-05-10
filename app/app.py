@@ -161,12 +161,11 @@ rule_input = st.text_area(
 if st.button("Parse Rules"):
 
     try:
-        # rule_texts = RP.parse_rules.split_rule_input(rule_input)
         rule_texts = RP.split_rule_input(rule_input)
 
         parsed_rules = RP.parse_rules(rule_texts)
 
-        st.success(f"Successfully parsed {len(parsed_rules)} rule(s).")
+        st.success(f"Successfully parsed {len(parsed_rules)} unique rule(s).")
 
         st.subheader("Parsed Rule Logic")
 
@@ -174,13 +173,6 @@ if st.button("Parse Rules"):
 
         st.session_state["parsed_rules"] = parsed_rules
 
-
-        # st.subheader("Raw Python Object")
-
-        # st.code(
-        #     json.dumps(parsed_rules, indent=4),
-        #     language="json"
-        # )
 
     except Exception as e:
         st.error(f"Failed to parse rules: {e}")
