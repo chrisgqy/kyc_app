@@ -56,6 +56,8 @@ except Exception as exc:
     st.stop()
 
 
+
+
 st.subheader("Cleaned Data Preview")
 st.dataframe(cleaned_df.head(5), width="stretch")
 
@@ -105,15 +107,15 @@ if "cleaned_df" not in st.session_state:
     st.stop()
 
 
-final_df = st.session_state["cleaned_df"]
+cleaned_df = st.session_state["cleaned_df"]
 
 st.subheader("Final Normalized Data")
-st.dataframe(final_df.head(100),  width="stretch")
+st.dataframe(cleaned_df.head(100),  width="stretch")
 
 
 if st.button("Build Rule-Ready Records"):
     try:
-        records = EP.build_records(final_df)
+        records = EP.build_records(cleaned_df)
     except Exception as exc:
         st.error(f"Failed to build records: {exc}")
         st.stop()
@@ -184,6 +186,59 @@ if st.button("Parse Rules"):
         st.error(f"Failed to parse rules: {e}")
 
     
+# ################################################
+# ################## 3rd Part ####################
+# ################################################
+# # Evaluation
+
+# st.title("KYC Rule Evaluation")
+
+# if st.button("Run Evaluation"):
+
+#     try:
+#         records = EP.build_records(final_df)
+#         rule_texts = RP.split_rule_input(rule_input)
+#         parsed_rules = RP.parse_rules(rule_texts)
+
+#         evaluation_result = EA.evaluate_records(
+#             records,
+#             parsed_rules,
+#             50
+#         )
+        
+#         result_df = pd.DataFrame(evaluation_result)    
+
+#         datasource_counts = (
+#             final_df
+#             .groupby("recordid")["datasource"]
+#             .nunique()
+#         )
+
+#         total_records = len(result_df)
+#         min_datasources = datasource_counts.min()
+#         max_datasources = datasource_counts.max()
+#         verification_rate = result_df["verified"].mean()
+
+
+#         st.success("Evaluation completed.")
+
+#         st.subheader("Evaluation Summary")
+
+#         col1, col2, col3, col4 = st.columns(4)
+
+#         col1.metric("Evaluation Records", total_records)
+#         col2.metric("Min Data Sources", min_datasources)
+#         col3.metric("Max Data Sources", max_datasources)
+#         col4.metric("Final Passing Rate", f"{verification_rate:.2%}")
+
+
+#         st.subheader("Evaluation Result")
+#         st.dataframe(result_df, width="stretch")
+
+#     except Exception as exc:
+#         st.error(f"Evaluation failed: {exc}")
+
+
 ################################################
 ################## 3rd Part ####################
 ################################################
@@ -191,47 +246,54 @@ if st.button("Parse Rules"):
 
 st.title("KYC Rule Evaluation")
 
-if st.button("Run Evaluation"):
+cleaned_df = st.session_state.get("cleaned_df")
+records = st.session_state.get("records")
+parsed_rules = st.session_state.get("parsed_rules")
 
-    try:
-        records = EP.build_records(final_df)
-        rule_texts = RP.split_rule_input(rule_input)
-        parsed_rules = RP.parse_rules(rule_texts)
+if cleaned_df is None:
+    st.info("Please process data first.")
 
-        evaluation_result = EA.evaluate_records(
-            records,
-            parsed_rules,
-            50
-        )
-        
-        result_df = pd.DataFrame(evaluation_result)    
+elif records is None:
+    st.info("Please build rule-ready records first.")
 
-        datasource_counts = (
-            final_df
-            .groupby("recordid")["datasource"]
-            .nunique()
-        )
+elif parsed_rules is None:
+    st.info("Please parse rules first.")
 
-        total_records = len(result_df)
-        min_datasources = datasource_counts.min()
-        max_datasources = datasource_counts.max()
-        verification_rate = result_df["verified"].mean()
+else:
+    if st.button("Run Evaluation"):
 
+        try:
+            evaluation_result = EA.evaluate_records(
+                records,
+                parsed_rules
+            )
 
-        st.success("Evaluation completed.")
+            result_df = pd.DataFrame(evaluation_result)
 
-        st.subheader("Evaluation Summary")
+            datasource_counts = (
+                cleaned_df
+                .groupby("recordid")["datasource"]
+                .nunique()
+            )
 
-        col1, col2, col3, col4 = st.columns(4)
+            total_records = len(result_df)
+            min_datasources = datasource_counts.min()
+            max_datasources = datasource_counts.max()
+            verification_rate = result_df["verified"].mean()
 
-        col1.metric("Evaluation Records", total_records)
-        col2.metric("Min Data Sources", min_datasources)
-        col3.metric("Max Data Sources", max_datasources)
-        col4.metric("Final Passing Rate", f"{verification_rate:.2%}")
+            st.success("Evaluation completed.")
 
+            st.subheader("Evaluation Summary")
 
-        st.subheader("Evaluation Result")
-        st.dataframe(result_df, width="stretch")
+            col1, col2, col3, col4 = st.columns(4)
 
-    except Exception as exc:
-        st.error(f"Evaluation failed: {exc}")
+            col1.metric("Evaluation Records", total_records)
+            col2.metric("Min Data Sources", min_datasources)
+            col3.metric("Max Data Sources", max_datasources)
+            col4.metric("Final Passing Rate", f"{verification_rate:.2%}")
+
+            st.subheader("Evaluation Result")
+            st.dataframe(result_df, width="stretch")
+
+        except Exception as exc:
+            st.error(f"Evaluation failed: {exc}")
