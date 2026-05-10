@@ -12,7 +12,7 @@ import core.rule_processor as RP
 
 
 ################################################
-################## 1st Page ####################
+################## 1st Part ####################
 ################################################
 # Data ingestion and processing
 
@@ -140,7 +140,7 @@ if st.button("Build Rule-Ready Records"):
 
 
 ################################################
-################## 2nd Page ####################
+################## 2nd Part ####################
 ################################################
 # Rule Processing
 
@@ -169,12 +169,12 @@ if st.button("Parse Rules"):
 
         st.json(parsed_rules)
 
-        st.subheader("Raw Python Object")
+        # st.subheader("Raw Python Object")
 
-        st.code(
-            json.dumps(parsed_rules, indent=4),
-            language="json"
-        )
+        # st.code(
+        #     json.dumps(parsed_rules, indent=4),
+        #     language="json"
+        # )
 
     except Exception as e:
         st.error(f"Failed to parse rules: {e}")
