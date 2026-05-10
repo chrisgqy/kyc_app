@@ -1,15 +1,18 @@
 import pickle
+import json
 from io import BytesIO
 
 import pandas as pd
 import streamlit as st
 
-import core.engine_processor as EP
 import core.models as Models
+import core.engine_processor as EP
+import core.rule_processor as RP
+
 
 
 ################################################
-################## First Page ##################
+################## 1st Page ####################
 ################################################
 # Data ingestion and processing
 
@@ -133,3 +136,45 @@ if st.button("Build Rule-Ready Records"):
         sample = records[0]
         st.write(f"Record ID: `{sample.record_id}`")
         st.write(f"Datasources: `{list(sample.datasources.keys())}`")
+
+
+
+################################################
+################## 2nd Page ####################
+################################################
+# Rule Processing
+
+st.title("KYC Rule Parser")
+
+st.write("Enter one rule per line.")
+
+rule_input = st.text_area(
+    "Rule input",
+    height=250,
+    value="""( (firstinitial or firstname) and notnomatch lastname and (dayofbirth and monthofbirth and yearofbirth) and (address1 or (streetname and streetnumber and (city or postalcode))) )
+( firstinitial and notnomatch firstname and lastname and taxid )"""
+)
+
+if st.button("Parse Rules"):
+
+    try:
+        # rule_texts = RP.parse_rules.split_rule_input(rule_input)
+        rule_texts = RP.split_rule_input(rule_input)
+
+        parsed_rules = RP.parse_rules(rule_texts)
+
+        st.success(f"Successfully parsed {len(parsed_rules)} rule(s).")
+
+        st.subheader("Parsed Rule Logic")
+
+        st.json(parsed_rules)
+
+        st.subheader("Raw Python Object")
+
+        st.code(
+            json.dumps(parsed_rules, indent=4),
+            language="json"
+        )
+
+    except Exception as e:
+        st.error(f"Failed to parse rules: {e}")
