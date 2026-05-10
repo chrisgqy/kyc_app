@@ -33,32 +33,50 @@ def evaluate_rule(rule, datasource_result):
     raise ValueError(f"Unknown operator: {op}")
 
 
+def source_assignment(
+        rule_index, rule_names,
+        rule_results, 
+        used_ds, rule_assignment
+    ):
+
+    if rule_index == len(rule_names):
+        return True
+
+    rule_name = rule_names[rule_index]
+    candidate_datasources = rule_results.get(rule_name, [])
+
+    for datasource_id in candidate_datasources:
+        if datasource_id not in used_ds:
+            rule_assignment[rule_name] = datasource_id
+            used_ds.add(datasource_id)
+
+            if source_assignment(
+                    rule_index + 1, rule_names,
+                    rule_results,
+                    used_ds, rule_assignment
+                ):
+                return True
+
+            used_ds.remove(datasource_id)
+            del rule_assignment[rule_name]
+
+    return False
+
+
+
+
 def find_valid_source_assignment(rule_names, rule_results):
 
     used_ds = set()
     rule_assignment = {}
 
-    def backtrack(rule_index):
-        if rule_index == len(rule_names):
-            return True
-
-        rule_name = rule_names[rule_index]
-        candidate_datasources = rule_results.get(rule_name, [])
-
-        for datasource_id in candidate_datasources:
-            if datasource_id not in used_ds:
-                rule_assignment[rule_name] = datasource_id
-                used_ds.add(datasource_id)
-
-                if backtrack(rule_index + 1):
-                    return True
-
-                used_ds.remove(datasource_id)
-                del rule_assignment[rule_name]
-
-        return False
-
-    verified = backtrack(0)
+    verified = source_assignment(
+        rule_index=0,
+        rule_names=rule_names,
+        rule_results=rule_results,
+        used_ds=used_ds,
+        rule_assignment=rule_assignment
+    )
 
     return verified, rule_assignment
 
