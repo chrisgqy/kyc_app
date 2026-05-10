@@ -8,6 +8,11 @@ import core.engine_processor as EP
 import core.models as Models
 
 
+################################################
+################## First Page ##################
+################################################
+# Data ingestion and processing
+
 st.set_page_config(
     page_title="KYC Rule Engine - Data Processor",
     layout="wide",
