@@ -14,6 +14,24 @@ class MatchFieldState(str, Enum):
     UNKNOWN = "unknown"
 
 
+#=========================
+# 2. Match Check  
+#=========================
+
+class MatchCheck(str, Enum):
+
+    MATCH = "match"
+    NOMATCH = "nomatch"
+    MISSING = "missing"
+    UNKNOWN = "unknown"
+
+    NOT_MATCH = "not_match"
+    NOT_NOMATCH = "not_nomatch"
+    NOT_MISSING = "not_missing"
+    NOT_UNKNOWN = "not_unknown"
+
+
+
 # =========================
 # 2. Field-level result
 # =========================
@@ -43,3 +61,5 @@ class DataSourceResult:
 class RecordEntry:
     record_id: str
     datasources: Dict[str, DataSourceResult]
+
+

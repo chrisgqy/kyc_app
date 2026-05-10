@@ -1,6 +1,36 @@
 import core.models as Models
 
 
+def evaluate_check(state, check):
+
+    if check == Models.MatchCheck.MATCH:
+        return state == Models.MatchFieldState.MATCH
+
+    if check == Models.MatchCheck.NOMATCH:
+        return state == Models.MatchFieldState.NOMATCH
+
+    if check == Models.MatchCheck.MISSING:
+        return state == Models.MatchFieldState.MISSING
+
+    if check == Models.MatchCheck.UNKNOWN:
+        return state == Models.MatchFieldState.UNKNOWN
+
+    if check == Models.MatchCheck.NOT_MATCH:
+        return state != Models.MatchFieldState.MATCH
+
+    if check == Models.MatchCheck.NOT_NOMATCH:
+        return state != Models.MatchFieldState.NOMATCH
+
+    if check == Models.MatchCheck.NOT_MISSING:
+        return state != Models.MatchFieldState.MISSING
+
+    if check == Models.MatchCheck.NOT_UNKNOWN:
+        return state != Models.MatchFieldState.UNKNOWN
+
+    raise ValueError(f"Unknown check type: {check}")
+
+
+
 def evaluate_rule(rule, datasource_result):
 
     if "field" in rule:
@@ -12,13 +42,7 @@ def evaluate_rule(rule, datasource_result):
             Models.MatchFieldState.MISSING
         )
 
-        if check == "match":
-            return state == Models.MatchFieldState.MATCH
-
-        if check == "not_nomatch":
-            return state != Models.MatchFieldState.NOMATCH
-
-        raise ValueError(f"Unknown check type: {check}")
+        return evaluate_check(state, check)
 
 
     op = rule["op"]
