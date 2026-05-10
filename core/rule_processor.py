@@ -117,3 +117,15 @@ def parse_rules(rule_texts):
         rules.append(rule)
 
     return rules
+
+
+def split_rule_input(raw_text):
+    rule_texts = []
+
+    for line in raw_text.splitlines():
+        line = line.strip()
+
+        if line:
+            rule_texts.append(line)
+
+    return rule_texts
