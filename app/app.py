@@ -8,6 +8,7 @@ import streamlit as st
 import core.models as Models
 import core.engine_processor as EP
 import core.rule_processor as RP
+import core.engine_evaluator as EA
 
 
 
@@ -56,7 +57,7 @@ except Exception as exc:
 
 
 st.subheader("Cleaned Data Preview")
-st.dataframe(cleaned_df.head(5), use_container_width=True)
+st.dataframe(cleaned_df.head(5), width="stretch")
 
 
 invalid_states = EP.find_invalid_match_states(cleaned_df)
@@ -67,7 +68,7 @@ if invalid_states:
     invalid_rows = EP.get_rows_with_invalid_states(cleaned_df, invalid_states)
 
     st.subheader("Rows With Invalid Match States")
-    st.dataframe(invalid_rows, use_container_width=True)
+    st.dataframe(invalid_rows, width="stretch")
 
     if len(invalid_states) > 5:
         st.error(
@@ -107,7 +108,7 @@ if "cleaned_df" not in st.session_state:
 final_df = st.session_state["cleaned_df"]
 
 st.subheader("Final Normalized Data")
-st.dataframe(final_df.head(100), use_container_width=True)
+st.dataframe(final_df.head(100),  width="stretch")
 
 
 if st.button("Build Rule-Ready Records"):
@@ -137,7 +138,7 @@ if st.button("Build Rule-Ready Records"):
         st.write(f"Record ID: `{sample.record_id}`")
         st.write(f"Datasources: `{list(sample.datasources.keys())}`")
 
-
+    st.session_state["records"] = records
 
 ################################################
 ################## 2nd Part ####################
@@ -151,8 +152,8 @@ st.write("Enter one rule per line.")
 rule_input = st.text_area(
     "Rule input",
     height=250,
-    value="""( (firstinitial or firstname) and notnomatch lastname and (dayofbirth and monthofbirth and yearofbirth) and (address1 or (streetname and streetnumber and (city or postalcode))) )
-( firstinitial and notnomatch firstname and lastname and taxid )"""
+    value="""(firstinitial and notnomatch firstname and lastname)
+(firstname and lastname and (city or postalcode))"""
 )
 
 if st.button("Parse Rules"):
@@ -169,6 +170,9 @@ if st.button("Parse Rules"):
 
         st.json(parsed_rules)
 
+        st.session_state["parsed_rules"] = parsed_rules
+
+
         # st.subheader("Raw Python Object")
 
         # st.code(
@@ -178,3 +182,56 @@ if st.button("Parse Rules"):
 
     except Exception as e:
         st.error(f"Failed to parse rules: {e}")
+
+    
+################################################
+################## 3rd Part ####################
+################################################
+# Evaluation
+
+st.title("KYC Rule Evaluation")
+
+if st.button("Run Evaluation"):
+
+    try:
+        records = EP.build_records(final_df)
+        rule_texts = RP.split_rule_input(rule_input)
+        parsed_rules = RP.parse_rules(rule_texts)
+
+        evaluation_result = EA.evaluate_records(
+            records,
+            parsed_rules,
+            50
+        )
+        
+        result_df = pd.DataFrame(evaluation_result)    
+
+        datasource_counts = (
+            final_df
+            .groupby("recordid")["datasource"]
+            .nunique()
+        )
+
+        total_records = len(result_df)
+        min_datasources = datasource_counts.min()
+        max_datasources = datasource_counts.max()
+        verification_rate = result_df["verified"].mean()
+
+
+        st.success("Evaluation completed.")
+
+        st.subheader("Evaluation Summary")
+
+        col1, col2, col3, col4 = st.columns(4)
+
+        col1.metric("Evaluation Records", total_records)
+        col2.metric("Min Data Sources", min_datasources)
+        col3.metric("Max Data Sources", max_datasources)
+        col4.metric("Final Passing Rate", f"{verification_rate:.2%}")
+
+
+        st.subheader("Evaluation Result")
+        st.dataframe(result_df, width="stretch")
+
+    except Exception as exc:
+        st.error(f"Evaluation failed: {exc}")
