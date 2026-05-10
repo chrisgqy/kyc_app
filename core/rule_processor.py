@@ -125,7 +125,7 @@ def split_rule_input(raw_text):
     for line in raw_text.splitlines():
         line = line.strip()
 
-        if line:
+        if line and line not in rule_texts:
             rule_texts.append(line)
 
     return rule_texts
