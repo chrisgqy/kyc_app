@@ -32,6 +32,14 @@ class MatchCheck(str, Enum):
 
 
 
+#=========================
+# 2. Match Check  
+#=========================
+class LogicalOperator(str, Enum):
+    AND = "AND"
+    OR = "OR"
+
+
 # =========================
 # 2. Field-level result
 # =========================
