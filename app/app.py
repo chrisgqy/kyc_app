@@ -44,10 +44,6 @@ except Exception as exc:
     st.stop()
 
 
-st.subheader("Raw Data Preview")
-st.dataframe(raw_df.head(5), use_container_width=True)
-
-
 try:
     cleaned_df = EP.data_cleaning(raw_df)
     EP.field_validation(cleaned_df)
