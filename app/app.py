@@ -168,10 +168,10 @@ if st.button("Build Rule-Ready Records"):
     if records:
         sample = records[0]
         st.write(f"Record ID: `{sample.record_id}`")
-        st.write(f"Datasources: `{list(sample.datasources.keys())}`")
+        st.write(f"Data sources: `{list(sample.datasources.keys())}`")
 
     st.session_state["records"] = records
-
+    st.session_state["data_sources"] = list(sample.datasources.keys())
 ################################################
 ################## 2nd Part ####################
 ################################################
@@ -238,7 +238,6 @@ else:
             )
 
             result_df = pd.DataFrame(evaluation_result)
-            st.session_state["evaluation_result"] = result_df
 
             datasource_counts = (
                 cleaned_df
@@ -251,8 +250,8 @@ else:
             max_datasources = datasource_counts.max()
             verification_rate = result_df["verified"].mean()
 
+            st.session_state["verification_rate"] = verification_rate 
             st.success("Evaluation completed.")
-
             st.subheader("Evaluation Summary")
 
             col1, col2, col3, col4 = st.columns(4)
@@ -264,6 +263,9 @@ else:
 
             st.subheader("Evaluation Result")
             st.dataframe(result_df, width="stretch")
+            
+            st.session_state["evaluation_result"] = result_df
+            st.session_state["verification_rate"] = verification_rate
 
         except Exception as exc:
             st.error(f"Evaluation failed: {exc}")

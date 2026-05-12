@@ -2,7 +2,6 @@ import pandas as pd
 import json
 from collections import Counter
 
-
 def datasource_utilization_count(evaluation_result):
 
     required_cols = {"verified", "rule_assignment"}
@@ -42,3 +41,5 @@ def counter_to_dataframe(counter):
     )
 
     return df.sort_values("usage_count", ascending=False)
+
+

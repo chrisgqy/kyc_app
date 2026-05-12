@@ -47,6 +47,7 @@ st.dataframe(evaluation_result.head(3), width='stretch')
 
 
 try:
+    # verified_result = Analyzer.filter_verified_result(evaluation_result)
     ds_counter = Analyzer.datasource_utilization_count(evaluation_result)
     utilization_df = Analyzer.counter_to_dataframe(ds_counter)
 
