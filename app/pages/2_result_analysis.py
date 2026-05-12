@@ -1,15 +1,7 @@
 import streamlit as st
-import pandas as pd
 
 import core.engine_analyzer as Analyzer
 
-
-st.set_page_config(
-    page_title="KYC App",
-    layout="wide"
-)
-
-import streamlit as st
 
 st.set_page_config(
     page_title="KYC App",

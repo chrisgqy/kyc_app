@@ -17,13 +17,6 @@ st.set_page_config(
     layout="wide"
 )
 
-import streamlit as st
-
-st.set_page_config(
-    page_title="KYC App",
-    layout="wide"
-)
-
 st.markdown("""
 <style>
 
