@@ -33,11 +33,51 @@ class MatchCheck(str, Enum):
 
 
 #=========================
-# 2. Match Check  
+# 2. Operators 
 #=========================
 class LogicalOperator(str, Enum):
     AND = "AND"
     OR = "OR"
+
+
+# ================================
+# 4. Assumption: Full Match Fields, and Required Columns
+# ================================
+class FullMatchField(str, Enum):
+
+    FIRSTINITIAL = "firstinitial"
+    FIRSTNAME = "firstname"
+    MIDDLENAME = "middlename"
+    LASTNAME = "lastname"
+
+    DAYOFBIRTH = "dayofbirth"
+    MONTHOFBIRTH = "monthofbirth"
+    YEAROFBIRTH = "yearofbirth"
+
+    STREETNAME = "streetname"
+    STREETNUMBER = "streetnumber"
+    STREETTYPE = "streettype"
+
+    CITY = "city"
+    REGION = "region"
+    POSTALCODE = "postalcode"
+
+    UNITNUMBER = "unitnumber"
+    ADDRESS1 = "address1"
+
+    TAXID = "taxid"
+    SOCIALINSURANCENUMBER = "socialinsurancenumber"
+    VOTERID = "voterid"
+
+    GENDER = "gender"
+
+class RequiredColumn(str, Enum):
+
+    RECORD_ID = "recordid"
+    DATASOURCE = "datasource"
+    TRUMATCH_CONFIDENCE = "trumatch_confidence"
+
+
 
 
 # =========================
@@ -69,5 +109,4 @@ class DataSourceResult:
 class RecordEntry:
     record_id: str
     datasources: Dict[str, DataSourceResult]
-
 
