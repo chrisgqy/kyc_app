@@ -5,9 +5,39 @@ import core.engine_analyzer as Analyzer
 
 
 st.set_page_config(
-    page_title="KYC Result Analysis",
+    page_title="KYC App",
     layout="wide"
 )
+
+import streamlit as st
+
+st.set_page_config(
+    page_title="KYC App",
+    layout="wide"
+)
+
+st.markdown("""
+<style>
+
+/* Sidebar page navigation */
+[data-testid="stSidebarNav"] {
+    font-size: 24px;
+}
+
+/* Individual page buttons */
+[data-testid="stSidebarNav"] span {
+    font-size: 24px !important;
+    font-weight: 700 !important;
+}
+
+/* Optional: enlarge sidebar width */
+[data-testid="stSidebar"] {
+    min-width: 160px;
+    max-width: 300px;
+}
+
+</style>
+""", unsafe_allow_html=True)
 
 st.title("KYC Result Analysis")
 st.write("Analyze datasource utilization from verified KYC results.")
@@ -21,15 +51,12 @@ if "evaluation_result" not in st.session_state:
 evaluation_result = st.session_state["evaluation_result"]
 
 st.subheader("Evaluation Result Preview")
-st.dataframe(evaluation_result.head(5), width='stretch')
+st.dataframe(evaluation_result.head(3), width='stretch')
 
 
 try:
     ds_counter = Analyzer.datasource_utilization_count(evaluation_result)
     utilization_df = Analyzer.counter_to_dataframe(ds_counter)
-
-    st.write("Utilization dataframe:")
-    st.dataframe(utilization_df.head(), width='stretch')
 
     st.subheader("Datasource Utilization")
 

@@ -12,6 +12,43 @@ import core.engine_evaluator as EA
 
 
 
+st.set_page_config(
+    page_title="KYC App",
+    layout="wide"
+)
+
+import streamlit as st
+
+st.set_page_config(
+    page_title="KYC App",
+    layout="wide"
+)
+
+st.markdown("""
+<style>
+
+/* Sidebar page navigation */
+[data-testid="stSidebarNav"] {
+    font-size: 24px;
+}
+
+/* Individual page buttons */
+[data-testid="stSidebarNav"] span {
+    font-size: 24px !important;
+    font-weight: 700 !important;
+}
+
+/* Optional: enlarge sidebar width */
+[data-testid="stSidebar"] {
+    min-width: 160px;
+    max-width: 300px;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+
+
 ################################################
 ################## 1st Part ####################
 ################################################
@@ -177,59 +214,6 @@ if st.button("Parse Rules"):
     except Exception as e:
         st.error(f"Failed to parse rules: {e}")
 
-    
-# ################################################
-# ################## 3rd Part ####################
-# ################################################
-# # Evaluation
-
-# st.title("KYC Rule Evaluation")
-
-# if st.button("Run Evaluation"):
-
-#     try:
-#         records = EP.build_records(final_df)
-#         rule_texts = RP.split_rule_input(rule_input)
-#         parsed_rules = RP.parse_rules(rule_texts)
-
-#         evaluation_result = EA.evaluate_records(
-#             records,
-#             parsed_rules,
-#             50
-#         )
-        
-#         result_df = pd.DataFrame(evaluation_result)    
-
-#         datasource_counts = (
-#             final_df
-#             .groupby("recordid")["datasource"]
-#             .nunique()
-#         )
-
-#         total_records = len(result_df)
-#         min_datasources = datasource_counts.min()
-#         max_datasources = datasource_counts.max()
-#         verification_rate = result_df["verified"].mean()
-
-
-#         st.success("Evaluation completed.")
-
-#         st.subheader("Evaluation Summary")
-
-#         col1, col2, col3, col4 = st.columns(4)
-
-#         col1.metric("Evaluation Records", total_records)
-#         col2.metric("Min Data Sources", min_datasources)
-#         col3.metric("Max Data Sources", max_datasources)
-#         col4.metric("Final Passing Rate", f"{verification_rate:.2%}")
-
-
-#         st.subheader("Evaluation Result")
-#         st.dataframe(result_df, width="stretch")
-
-#     except Exception as exc:
-#         st.error(f"Evaluation failed: {exc}")
-
 
 ################################################
 ################## 3rd Part ####################
@@ -261,6 +245,7 @@ else:
             )
 
             result_df = pd.DataFrame(evaluation_result)
+            st.session_state["evaluation_result"] = result_df
 
             datasource_counts = (
                 cleaned_df
