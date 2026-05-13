@@ -45,7 +45,6 @@ The optimization engine attempts to minimize datasource cost while maintaining a
 ## Optimization
 
 - PuLP
-- CBC Solver
 
 ## Testing
 
