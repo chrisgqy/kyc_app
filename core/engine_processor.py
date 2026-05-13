@@ -4,9 +4,11 @@ import numpy as np
 import core.models as models
 import pickle
 
+
 # Supported match fields and required input columns
 full_match_field = [field.value for field in models.FullMatchField]
 required_columns = set([col.value for col in models.RequiredColumn])
+
 
 # Standardize dataframe format before validation
 def data_cleaning(df):
@@ -42,7 +44,6 @@ def field_validation(df):
 # Find values that are not valid match states
 def find_invalid_match_states(df):
 
-    
     valid_match_states = set(state.value for state in models.MatchFieldState)
     
     match_fields =  [col for col in full_match_field if col in df.columns]
@@ -58,7 +59,7 @@ def get_rows_with_invalid_states(df, invalid_states):
    
     match_fields = [col for col in full_match_field if col in df.columns]
     mask = df[match_fields].isin(invalid_states).any(axis=1)
-    df.sort_values(by='recordid', ascending = True, inplace = True)
+    df.sort_values(by='recordid', ascending=True, inplace=True)
 
     return df[mask]
 
@@ -100,6 +101,7 @@ def build_datasource_result(df, datasource_id):
 
     return output 
 
+
 # Build one record with all related datasource results
 def build_record(df, record_id):
     datasources = {}
@@ -115,7 +117,8 @@ def build_record(df, record_id):
 
     return output
 
-# Build one record with all related datasource results
+
+# Clean, validate, and convert dataframe rows into RecordEntry objects
 def build_records(df):
     
     df = data_cleaning(df)
@@ -131,5 +134,3 @@ def build_records(df):
             print(f"Error processing record {rid}: {e}")
 
     return record
-
-
