@@ -3,7 +3,7 @@ import pulp
 import ast
 import pandas as pd 
 
-
+# Convert rule_results into a dictionary format
 def normalize_rule_results(value):
     if isinstance(value, dict):
         return value
@@ -13,7 +13,7 @@ def normalize_rule_results(value):
 
     raise ValueError(f"Invalid rule_results value: {value}")
 
-
+# Get all datasources that appear in rule results
 def get_available_sources(evaluation_df):
     sources = set()
 
@@ -25,7 +25,7 @@ def get_available_sources(evaluation_df):
 
     return sorted(sources)
 
-
+# Optimize datasource selection while meeting the target verification rate
 def solve_source_selection_pulp(df, source_cost, min_verify_rate=1.0, time_limit_sec=60):
 
 
@@ -80,9 +80,12 @@ def solve_source_selection_pulp(df, source_cost, min_verify_rate=1.0, time_limit
             if assignments_using_d:
                 model += ( pulp.lpSum(assignments_using_d) <= 1)
 
-
+    # Enforce minimum verification target
     model += (pulp.lpSum(z[r] for r in range(n_records)) >= required_verified)
+
+    # Minimize selected datasource cost
     model += pulp.lpSum(source_cost[d] * x[d] for d in sources)
+
     solver = pulp.PULP_CBC_CMD(timeLimit=time_limit_sec,msg=False)
 
     status_code = model.solve(solver)
@@ -136,7 +139,7 @@ def solve_source_selection_pulp(df, source_cost, min_verify_rate=1.0, time_limit
     
     return output
 
-    
+# Convert optimized rule assignments into a dataframe
 def optimized_assignment_df_builder(optimized_output):
     assignments = optimized_output['assignments']
     df =  pd.DataFrame(assignments)
