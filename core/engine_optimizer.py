@@ -1,6 +1,7 @@
 import math
 import pulp
-# import ast
+import ast
+import pandas as pd 
 
 
 def normalize_rule_results(value):
@@ -25,7 +26,7 @@ def get_available_sources(evaluation_df):
     return sorted(sources)
 
 
-def solve_source_selection_pulp(df, source_cost,min_verify_rate=1.0, time_limit_sec=60):
+def solve_source_selection_pulp(df, source_cost, min_verify_rate=1.0, time_limit_sec=60):
 
 
     required_cols = {"verified", "rule_results"}
@@ -134,3 +135,10 @@ def solve_source_selection_pulp(df, source_cost,min_verify_rate=1.0, time_limit_
         }
     
     return output
+
+    
+def optimized_assignment_df_builder(optimized_output):
+    assignments = optimized_output['assignments']
+    df =  pd.DataFrame(assignments)
+    df = df.transpose()
+    return df

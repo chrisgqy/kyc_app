@@ -1,4 +1,5 @@
 import json
+import pandas as pd
 import streamlit as st
 
 import core.engine_analyzer as Analyzer
@@ -47,7 +48,7 @@ if "evaluation_result" not in st.session_state:
 evaluation_result = st.session_state["evaluation_result"]
 
 st.subheader("Evaluation Result Preview")
-st.dataframe(evaluation_result.head(3), use_container_width=True)
+st.dataframe(evaluation_result.head(3), width="stretch")
 
 
 if "rule_results" not in evaluation_result.columns:
@@ -83,8 +84,8 @@ for i, datasource in enumerate(available_datasources):
         source_cost[datasource] = st.number_input(
             label=f"Cost",
             min_value=0.0,
-            value=0.0,
-            step=0.01,
+            value=0.1,
+            step=0.1,
             key=f"cost_{datasource}"
         )
 
@@ -94,13 +95,14 @@ st.json(source_cost)
 
 st.subheader("Optimization Settings")
 
-verification_rate = st.session_state["verification_rate"]
 
 min_verify_rate = st.slider(
     "Minimum verification rate",
     min_value=0.00,
-    max_value=round(verification_rate,2),
-    value=verification_rate,
+    # max_value=round(verification_rate,2),
+    # value=verification_rate,
+    max_value=1.0,
+    value=1.0,
     step=0.025
 )
 
@@ -145,39 +147,53 @@ if st.button("Run Optimizer"):
         col1, col2, col3, col4 = st.columns(4)
 
         col1.metric(
-            "Required Verified",
-            optimizer_result["required_verified"]
-        )
+            "Required Verified", optimizer_result["required_verified"])
 
-        col2.metric(
-            "Actual Verified",
-            optimizer_result["actual_verified"]
-        )
+        verification_rate = st.session_state["verification_rate"]
+        col2.metric("Actual Verified", optimizer_result["actual_verified"])
 
-        col3.metric(
-            "Actual Verify Rate",
-            round(optimizer_result["actual_verify_rate"], 4)
-        )
+        col3.metric("Actual Verify Rate", round(optimizer_result["actual_verify_rate"]*verification_rate, 4))
 
-        col4.metric(
-            "Cost Per Record",
-            optimizer_result["cost_per_record"]
-        )
+        col4.metric("Cost Per Record", round(optimizer_result["cost_per_record"], 2))
+
 
         st.subheader("Selected Sources")
-        st.write(optimizer_result["selected_sources"])
+        st.markdown(
+            " ".join(f"`{source}`"for source in optimizer_result["selected_sources"])
+        )
 
-        st.subheader("Total Cost")
-        st.metric("Total Cost", optimizer_result["total_cost"])
+        col1, col2, col3 = st.columns(3)
+        col1.metric("Total Cost", round(optimizer_result["total_cost"], 2))
 
-        st.subheader("Verified Record IDs")
-        st.write(optimizer_result["verified_record_ids"])
+        # st.subheader("Verified Record IDs")
+        # st.write(optimizer_result["verified_record_ids"])
 
-        st.subheader("Unverified Record IDs")
-        st.write(optimizer_result["unverified_record_ids"])
+        verified_ids = optimizer_result["verified_record_ids"]
+        col2.metric("Verified Records", len(verified_ids))
+
+        with col2.expander("Show verified record IDs"):
+            st.dataframe(
+                pd.DataFrame(verified_ids, columns=["record_id"])
+            )
+        
+        unverified_ids = optimizer_result["unverified_record_ids"]
+        col3.metric("Unverified Record IDs", len(unverified_ids))
+
+
+        # global_unverified_ids = Optimizer.global_unverified_record(optimizer_result, optimizer_result)
+        # col3.metric("Unverified Record IDs", len(unverified_ids))
+
+        
+        with col3.expander("Show unverified record IDs"):
+            st.dataframe(
+                pd.DataFrame(unverified_ids, columns=["record_id"])
+            )
 
         st.subheader("Assignments")
-        st.json(optimizer_result["assignments"])
+        # st.write(optimizer_result["assignments"])
+        optimizer_assignments = Optimizer.optimized_assignment_df_builder(optimizer_result)
+        st.dataframe(optimizer_assignments, width="stretch")
+
 
     except Exception as e:
         st.error(f"Failed to run optimizer: {e}")

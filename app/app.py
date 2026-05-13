@@ -172,6 +172,7 @@ if st.button("Build Rule-Ready Records"):
 
     st.session_state["records"] = records
     st.session_state["data_sources"] = list(sample.datasources.keys())
+
 ################################################
 ################## 2nd Part ####################
 ################################################
