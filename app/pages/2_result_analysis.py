@@ -42,6 +42,21 @@ if "evaluation_result" not in st.session_state:
 
 evaluation_result = st.session_state["evaluation_result"]
 
+st.subheader("Evaluation Summary")
+col1, col2, col3, col4 = st.columns(4)
+
+total_records = st.session_state["total_records"]
+min_datasources = st.session_state["min_datasources"]
+max_datasources = st.session_state["max_datasources"]
+verification_rate = st.session_state["verification_rate"]
+
+
+col1.metric("Evaluation Records", total_records)
+col2.metric("Min Data Sources", min_datasources)
+col3.metric("Max Data Sources", max_datasources)
+col4.metric("Final Passing Rate", f"{verification_rate:.2%}")
+
+
 st.subheader("Evaluation Result Preview")
 st.dataframe(evaluation_result.head(3), width='stretch')
 

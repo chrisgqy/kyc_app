@@ -253,10 +253,14 @@ else:
             max_datasources = datasource_counts.max()
             verification_rate = result_df["verified"].mean()
 
-            st.session_state["verification_rate"] = verification_rate 
-            st.success("Evaluation completed.")
-            st.subheader("Evaluation Summary")
+            st.session_state["total_records"] = total_records
+            st.session_state["min_datasources"] = min_datasources
+            st.session_state["max_datasources"] = max_datasources
+            st.session_state["verification_rate"] = verification_rate
 
+            st.success("Evaluation completed.")
+
+            st.subheader("Evaluation Summary")
             col1, col2, col3, col4 = st.columns(4)
 
             col1.metric("Evaluation Records", total_records)
