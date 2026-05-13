@@ -15,7 +15,6 @@ The application allows users to:
 
 The project is built as an interactive Streamlit application with a modular Python backend architecture.
 
----
 
 # Project Motivation
 
@@ -30,8 +29,6 @@ This project explores:
 - Operational analytics for KYC systems
 
 The optimization engine attempts to minimize datasource cost while maintaining a target verification rate.
-
----
 
 # Tech Stack
 
@@ -59,7 +56,6 @@ The optimization engine attempts to minimize datasource cost while maintaining a
 
 - Docker
 
----
 
 # Repository Structure
 
@@ -87,8 +83,6 @@ kyc_app/
 └── README.md
 ```
 
----
-
 # Core Components
 
 ## 1. Data Processing Engine
@@ -99,8 +93,6 @@ The processor module:
 - Validates required columns
 - Validates allowed match states
 - Builds structured record objects for evaluation
-
----
 
 ## 2. Rule Processing Engine
 
@@ -120,8 +112,6 @@ Example rule:
 (firstname or firstinitial) and notnomatch lastname
 ```
 
----
-
 ## 3. Rule Evaluation Engine
 
 The evaluator:
@@ -131,8 +121,6 @@ The evaluator:
 - Enforces datasource uniqueness constraints
 - Produces record-level verification outputs
 
----
-
 ## 4. Analyzer Engine
 
 The analyzer:
@@ -140,8 +128,6 @@ The analyzer:
 - Aggregates datasource utilization statistics
 - Measures datasource assignment frequency
 - Supports operational analysis of verification workflows
-
----
 
 ## 5. Optimization Engine
 
@@ -153,8 +139,6 @@ The optimizer uses Integer Linear Programming (ILP) to:
 - Select the minimal datasource set needed for verification
 
 The optimization model is implemented using PuLP.
-
----
 
 # Input Data Format
 
@@ -186,8 +170,6 @@ Examples:
 - `missing`
 - `unknown`
 
----
-
 # Running the Application Locally
 
 ## 1. Create Environment
@@ -197,15 +179,12 @@ conda create -n kyc_app python=3.12
 conda activate kyc_app
 ```
 
----
 
 ## 2. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
-
----
 
 ## 3. Launch Streamlit App
 
@@ -221,8 +200,6 @@ Application will be available at:
 http://localhost:8501
 ```
 
----
-
 # Running Tests
 
 Run all tests:
@@ -237,8 +214,6 @@ Run coverage:
 python -m pytest --cov=core
 ```
 
----
-
 # Docker Usage
 
 ## Build Docker Image
@@ -246,8 +221,6 @@ python -m pytest --cov=core
 ```bash
 docker build -t kyc-app:v1.0 .
 ```
-
----
 
 ## Run Docker Container
 
@@ -261,15 +234,11 @@ Then open:
 http://localhost:8501
 ```
 
----
-
 # Application Workflow
 
 ## Step 1 — Upload Data
 
 Upload KYC datasource match results CSV.
-
----
 
 ## Step 2 — Define Rules
 
@@ -282,8 +251,6 @@ Example:
 (firstname and taxid)
 ```
 
----
-
 ## Step 3 — Evaluate Rules
 
 The engine evaluates:
@@ -292,7 +259,6 @@ The engine evaluates:
 - Whether records are verifiable
 - Valid datasource assignments
 
----
 
 ## Step 4 — Analyze Results
 
@@ -302,7 +268,6 @@ Analyze:
 - Verification rates
 - Assignment distribution
 
----
 
 ## Step 5 — Optimize Datasource Selection
 
@@ -318,7 +283,6 @@ The optimizer returns:
 - Record assignments
 - Estimated cost reduction
 
----
 
 # Notes
 
@@ -327,7 +291,6 @@ The optimizer returns:
 - Rule parsing currently supports AND / OR logic and `notnomatch`.
 - The project is currently implemented as an MVP/prototype system.
 
----
 
 # Future Enhancements
 
@@ -344,7 +307,6 @@ Potential future improvements include:
 - Audit logging
 - Parallel optimization execution
 
----
 
 # License
 
