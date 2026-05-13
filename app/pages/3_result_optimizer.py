@@ -163,7 +163,7 @@ if st.button("Run Optimizer"):
         )
 
         col1, col2, col3 = st.columns(3)
-        col1.metric("Total Cost", round(optimizer_result["total_cost"], 2))
+        col1.metric("Total Cost", round(optimizer_result["total_cost"]/verification_rate, 2))
 
         # st.subheader("Verified Record IDs")
         # st.write(optimizer_result["verified_record_ids"])
