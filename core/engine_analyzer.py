@@ -2,6 +2,8 @@ import pandas as pd
 import json
 from collections import Counter
 
+
+# Count datasource usage across verified records
 def datasource_utilization_count(evaluation_result):
 
     required_cols = {"verified", "rule_assignment"}
@@ -10,6 +12,7 @@ def datasource_utilization_count(evaluation_result):
     if missing_cols:
         raise ValueError(f"Missing required columns: {missing_cols}")
 
+    # Only analyze verified records
     verified_result = evaluation_result[evaluation_result["verified"] == True]
 
     ds_counter = Counter()
@@ -24,12 +27,13 @@ def datasource_utilization_count(evaluation_result):
             assignment = val
         else:
             continue
-
+        
+        # Count datasource occurrences from rule assignments
         ds_counter.update(assignment.values())
 
     return ds_counter
 
-
+# Convert datasource counts into a sorted dataframe
 def counter_to_dataframe(counter):
 
     if not counter:
