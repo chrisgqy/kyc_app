@@ -1,5 +1,4 @@
 import json
-import ast
 import streamlit as st
 
 import core.engine_analyzer as Analyzer
@@ -56,8 +55,10 @@ if "rule_results" not in evaluation_result.columns:
     st.stop()
 
 
-available_datasources = st.session_state["data_sources"]
-available_datasources = sorted(available_datasources)
+# available_datasources = st.session_state["data_sources"]
+# available_datasources = sorted(available_datasources)
+
+available_datasources = Optimizer.get_available_sources(evaluation_result)
 
 if not available_datasources:
     st.warning("No available datasources found from rule_results.")
@@ -111,12 +112,11 @@ time_limit_sec = st.number_input(
 )
 
 
+
+
 # -----------------------------
 # Run optimizer
 # -----------------------------
-
-# verified_result = Analyzer.filter_verified_result(evaluation_result)
-# verified_result.rule_results = verified_result.rule_results.apply(ast.literal_eval)
 
 if st.button("Run Optimizer"):
 

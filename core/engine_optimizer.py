@@ -1,6 +1,28 @@
 import math
 import pulp
-import ast
+# import ast
+
+
+def normalize_rule_results(value):
+    if isinstance(value, dict):
+        return value
+
+    if isinstance(value, str):
+        return ast.literal_eval(value)
+
+    raise ValueError(f"Invalid rule_results value: {value}")
+
+
+def get_available_sources(evaluation_df):
+    sources = set()
+
+    for value in evaluation_df["rule_results"]:
+        rule_results = normalize_rule_results(value)
+
+        for datasource_list in rule_results.values():
+            sources.update(datasource_list)
+
+    return sorted(sources)
 
 
 def solve_source_selection_pulp(df, source_cost,min_verify_rate=1.0, time_limit_sec=60):
@@ -12,10 +34,9 @@ def solve_source_selection_pulp(df, source_cost,min_verify_rate=1.0, time_limit_
     if missing_cols:
         raise ValueError(f"Missing required columns: {missing_cols}")
 
-    df = df[df["verified"] == True]
-    df['rule_results'] = df['rule_results'].apply(ast.literal_eval)
-
-
+    df = df[df["verified"] == True].copy()
+    
+    # df['rule_results'] = df['rule_results'].apply(ast.literal_eval)
     df = df.reset_index(drop=True).copy()
 
     sources = sorted(source_cost.keys())

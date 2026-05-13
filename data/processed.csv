@@ -1,0 +1,2 @@
+﻿,record_id,verified,rule_results,rule_assignment
+0,record_1,true,"{""rule_1"":[""b"",""c""],""rule_2"":[""b"",""c"",""f"",""g""]}","{""rule_1"":""b"",""rule_2"":""c""}"

@@ -5,26 +5,9 @@ import core.models as models
 import pickle
 
 
-BASE_DIR = Path(__file__).resolve().parent
-DATA_PATH = BASE_DIR.parent / "data" / "kyc_data.csv"
+full_match_field = [field.value for field in models.FullMatchField]
+required_columns = set([col.value for col in models.RequiredColumn])
 
-try:
-    df = pd.read_csv(DATA_PATH)
-except FileNotFoundError:
-    print("Error: kyc_data.csv not found.")
-    exit(1)
-
-full_match_field = [ 'firstinitial', 'firstname', 'middlename',
-       'lastname', 'dayofbirth', 'monthofbirth', 'yearofbirth', 'streetname',
-       'streetnumber', 'streettype', 'city', 'region', 'postalcode',
-       'unitnumber', 'address1', 'taxid', 'socialinsurancenumber', 'voterid',
-       'gender']
-
-FULL_MATCH_FIELDS = [field.value for field in models.FullMatchField]
-
-REQUIRED_COLUMNS = [col.value for col in models.RequiredColumn]
-
-required_columns = set(["recordid", "datasource", "trumatch_confidence"])
 
 def data_cleaning(df):
     

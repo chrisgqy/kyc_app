@@ -7,9 +7,7 @@ def tokenize_rule(rule_text):
     rule_text = rule_text.lower().strip()
 
     tokens = re.findall(
-        r"\(|\)|and|or|notnomatch|[a-zA-Z0-9_]+",
-        rule_text
-    )
+        r"\(|\)|and|or|notnomatch|[a-zA-Z0-9_]+",rule_text)
 
     return tokens
 
@@ -20,15 +18,13 @@ def parse_rule(rule_text, rule_name):
 
     if not tokens:
         raise ValueError("Rule is empty.")
-
     rule_tree, next_index = parse_expression(tokens, 0)
 
     if next_index != len(tokens):
         raise ValueError(f"Unexpected token: {tokens[next_index]}")
 
     rule_tree = {
-        "name": rule_name,
-        **rule_tree
+        "name": rule_name, **rule_tree
     }
 
     return rule_tree
@@ -46,20 +42,11 @@ def parse_expression(tokens, index):
 
         next_condition, index = parse_term(tokens, index)
 
-        if (
-            isinstance(current, dict)
-            and current.get("op") == op
-        ):
+        if isinstance(current, dict) and current.get("op") == op:
             current["conditions"].append(next_condition)
 
         else:
-            current = {
-                "op": op,
-                "conditions": [
-                    current,
-                    next_condition
-                ]
-            }
+            current = {"op": op,"conditions": [current, next_condition]}
 
     return current, index
 
