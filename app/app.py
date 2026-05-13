@@ -185,8 +185,10 @@ st.write("Enter one rule per line.")
 rule_input = st.text_area(
     "Rule input",
     height=250,
-    value="""(firstinitial and notnomatch firstname and lastname)
-(firstname and lastname and (city or postalcode))"""
+    value=
+    """
+    ( (firstinitial or firstname) and notnomatch lastname and (dayofbirth and monthofbirth and yearofbirth) and (address1 or (streetname and streetnumber and (city or postalcode) ) ) )
+    ( firstinitial and notnomatch firstname and lastname and taxid )"""
 )
 
 if st.button("Parse Rules"):
