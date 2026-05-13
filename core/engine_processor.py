@@ -4,11 +4,11 @@ import numpy as np
 import core.models as models
 import pickle
 
-
+# Supported match fields and required input columns
 full_match_field = [field.value for field in models.FullMatchField]
 required_columns = set([col.value for col in models.RequiredColumn])
 
-
+# Standardize dataframe format before validation
 def data_cleaning(df):
     
     df = df.copy()
@@ -23,6 +23,7 @@ def data_cleaning(df):
     return df
 
 
+# Validate that required columns exist and match fields are supported
 def field_validation(df):
     
     missing_columns = required_columns - set(df.columns)
@@ -38,6 +39,7 @@ def field_validation(df):
         raise ValueError(f"Invalid match fields: {invalid_fields}")
 
 
+# Find values that are not valid match states
 def find_invalid_match_states(df):
 
     
@@ -51,6 +53,7 @@ def find_invalid_match_states(df):
     return invalid_states 
 
 
+# Return rows containing invalid match states
 def get_rows_with_invalid_states(df, invalid_states):
    
     match_fields = [col for col in full_match_field if col in df.columns]
@@ -60,11 +63,13 @@ def get_rows_with_invalid_states(df, invalid_states):
     return df[mask]
 
 
+# Replace invalid values with valid match states
 def replace_invalid_states(df, replacements: dict):
     df = df.copy()
     return df.replace(replacements)
 
 
+# Validate cleaned input before building records
 def data_validation(df):
     if df.empty:
         raise ValueError("Input data is empty.")
@@ -75,6 +80,7 @@ def data_validation(df):
         raise ValueError(f"Invalid match states still exist: {invalid_states}")
 
 
+# Build one datasource result for a record
 def build_datasource_result(df, datasource_id):
     
     match_fields = [col for col in df.columns if col not in required_columns]
@@ -94,7 +100,7 @@ def build_datasource_result(df, datasource_id):
 
     return output 
 
-
+# Build one record with all related datasource results
 def build_record(df, record_id):
     datasources = {}
     record = df[df["recordid"] == record_id]
@@ -109,7 +115,7 @@ def build_record(df, record_id):
 
     return output
 
-
+# Build one record with all related datasource results
 def build_records(df):
     
     df = data_cleaning(df)
