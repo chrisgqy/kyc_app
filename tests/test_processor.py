@@ -35,17 +35,18 @@ def make_valid_df():
 
 
 def test_full_match_fields_come_from_enum():
-    assert "firstname" in processor.FULL_MATCH_FIELDS
-    assert "lastname" in processor.FULL_MATCH_FIELDS
-    assert "taxid" in processor.FULL_MATCH_FIELDS
+    assert "firstname" in processor.full_match_field
+    assert "lastname" in processor.full_match_field
+    assert "taxid" in processor.full_match_field
+
 
 
 def test_required_columns_come_from_enum():
-    assert processor.REQUIRED_COLUMNS == [
+    assert processor.required_columns == {
         "recordid",
         "datasource",
         "trumatch_confidence",
-    ]
+    }
 
 
 def test_data_cleaning_standardizes_columns_and_values():
