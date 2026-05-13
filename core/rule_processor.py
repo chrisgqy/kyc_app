@@ -1,7 +1,7 @@
 import re
 import core.models as Models
 
-
+# Split raw rule text into parser-friendly tokens
 def tokenize_rule(rule_text):
 
     rule_text = rule_text.lower().strip()
@@ -11,7 +11,7 @@ def tokenize_rule(rule_text):
 
     return tokens
 
-
+# Parse one rule string into a rule tree
 def parse_rule(rule_text, rule_name):
 
     tokens = tokenize_rule(rule_text)
@@ -30,6 +30,7 @@ def parse_rule(rule_text, rule_name):
     return rule_tree
 
 
+# Parse AND / OR expressions
 def parse_expression(tokens, index):
 
     current, index = parse_term(tokens, index)
@@ -51,6 +52,7 @@ def parse_expression(tokens, index):
     return current, index
 
 
+# Parse one field condition or parenthesized expression
 def parse_term(tokens, index):
 
     if index >= len(tokens):
@@ -68,6 +70,7 @@ def parse_term(tokens, index):
 
         return expression, index
 
+    # notnomatch field => field must not be NOMATCH
     if tokens[index] == "notnomatch":
         index += 1
 
@@ -82,13 +85,12 @@ def parse_term(tokens, index):
             "check": "not_nomatch"
         }, index
 
+    # Default field check is exact match
     field = tokens[index]
     index += 1
 
-    return {
-        "field": field,
-        "check": "match"
-    }, index
+    output = {"field": field, "check": "match"}
+    return output
 
 
 def parse_rules(rule_texts):
@@ -105,7 +107,7 @@ def parse_rules(rule_texts):
 
     return rules
 
-
+# Parse multiple rule strings
 def split_rule_input(raw_text):
     rule_texts = []
 
