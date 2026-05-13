@@ -7,6 +7,7 @@ from enum import Enum
 # 1. Core Value States
 # =========================
 
+# Supported rule evaluation checks
 class MatchFieldState(str, Enum):
     MATCH = "match"
     NOMATCH = "nomatch"
@@ -18,6 +19,7 @@ class MatchFieldState(str, Enum):
 # 2. Match Check  
 #=========================
 
+# Supported rule evaluation checks
 class MatchCheck(str, Enum):
 
     MATCH = "match"
@@ -33,8 +35,10 @@ class MatchCheck(str, Enum):
 
 
 #=========================
-# 2. Operators 
+# 3. Operators 
 #=========================
+
+# Supported identity fields used in rule evaluation
 class LogicalOperator(str, Enum):
     AND = "AND"
     OR = "OR"
@@ -43,6 +47,8 @@ class LogicalOperator(str, Enum):
 # ================================
 # 4. Assumption: Full Match Fields, and Required Columns
 # ================================
+
+# Supported identity fields used in rule evaluation
 class FullMatchField(str, Enum):
 
     FIRSTINITIAL = "firstinitial"
@@ -71,6 +77,7 @@ class FullMatchField(str, Enum):
 
     GENDER = "gender"
 
+# Required columns for input datasets
 class RequiredColumn(str, Enum):
 
     RECORD_ID = "recordid"
@@ -78,12 +85,10 @@ class RequiredColumn(str, Enum):
     TRUMATCH_CONFIDENCE = "trumatch_confidence"
 
 
-
-
 # =========================
-# 2. Field-level result
+# 5. Field-level result
 # =========================
-
+# Result for a single field comparison
 @dataclass
 class FieldResult:
     field_name: str
@@ -91,9 +96,9 @@ class FieldResult:
 
 
 # =========================
-# 3. Datasource result (per user per source)
+# 6. Datasource result (per user per source)
 # =========================
-
+# Evaluation result from one datasource
 @dataclass
 class DataSourceResult:
     datasource_id: str
@@ -102,9 +107,9 @@ class DataSourceResult:
 
 
 # =========================
-# 4. User record (core entity)
+# 7. User record (core entity)
 # =========================
-
+# Aggregated datasource results for one record
 @dataclass
 class RecordEntry:
     record_id: str
