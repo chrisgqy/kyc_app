@@ -61,19 +61,17 @@ st.write(
 )
 
 
-uploaded_file = st.file_uploader(
-    "Upload KYC CSV file",
-    type=["csv"],
-)
 
-
-if uploaded_file is None:
-    st.info("Please upload a CSV file to begin.")
-    st.stop()
-
+uploaded_file = st.file_uploader("Upload KYC data", type=["csv"])
 
 try:
-    raw_df = pd.read_csv(uploaded_file)
+    if uploaded_file is not None:
+        raw_df = pd.read_csv(uploaded_file)
+        st.success("Using uploaded data.")
+    else:
+        raw_df = pd.read_csv("demo_data/demo_kyc_data.csv")
+        st.info("No file uploaded — using demo data.")
+
 except Exception as exc:
     st.error(f"Failed to read CSV file: {exc}")
     st.stop()
@@ -188,8 +186,8 @@ rule_input = st.text_area(
     height=250,
     value=
     """
-    ( (firstinitial or firstname) and notnomatch lastname and (dayofbirth and monthofbirth and yearofbirth) and (address1 or (streetname and streetnumber and (city or postalcode) ) ) )
-    ( firstinitial and notnomatch firstname and lastname and taxid )"""
+    (firstinitial and notnomatch firstname and lastname)
+    (firstname and lastname and (city or postalcode))"""
 )
 
 if st.button("Parse Rules"):
