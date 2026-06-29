@@ -30,7 +30,7 @@ def evaluate_check(state, check):
     raise ValueError(f"Unknown check type: {check}")
 
 
-
+# whether one datasource satisfies one rule.
 def evaluate_rule(rule, datasource_result):
 
     if "field" in rule:
@@ -56,7 +56,7 @@ def evaluate_rule(rule, datasource_result):
 
     raise ValueError(f"Unknown operator: {op}")
 
-
+# assign one unique datasource to each rule.
 def source_assignment(
         rule_index, rule_names,
         rule_results, 
@@ -85,8 +85,6 @@ def source_assignment(
             del rule_assignment[rule_name]
 
     return False
-
-
 
 
 def find_valid_source_assignment(rule_names, rule_results):
